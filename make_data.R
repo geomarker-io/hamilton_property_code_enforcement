@@ -31,25 +31,6 @@ d <-
   st_join(cincy::tract_tigris_2020) |>
   mutate(address = stringr::str_to_lower(FULL_ADDRESS))
 
-## city_parcel_lookup <-
-##   readr::read_csv("violations_likely.csv") |>
-##   transmute(
-##     address = stringr::str_squish(`FULL ADDRESS`),
-##     parcel_id = PARCEL_NO
-##   ) |>
-##   group_by(address, parcel_id) |>
-##   summarize(n = n()) |>
-##   arrange(desc(n))
-
-## city_violation_lookup <-
-##   readr::read_csv("violations_likely.csv") |>
-##   transmute(violation = stringr::str_to_lower(`VIOLATION TYPE`)) |>
-##   dplyr::group_by(violation) |>
-##   summarize(n = n()) |>
-##   arrange(desc(n))
-
-## d <- left_join(d, city_parcel_lookup, by = c("FULL_ADDRESS" = "address"), na_matches = "never")
-
 d_tract <-
   d |>
   st_drop_geometry() |>
