@@ -57,7 +57,8 @@ d_tract <-
   left_join(hh_per_tract, by = "census_tract_id_2020") |>
   mutate(violations_per_household = n_violations / n_households)
 
-d_tract |>
+d_tract <-
+  d_tract |>
   st_drop_geometry() |>
   select(census_tract_id_2020, violations_per_household) |>
   ungroup() |>
@@ -68,4 +69,18 @@ d_tract |>
             title = "Hamilton County Property Code Enforcement",
             version = "0.1",
             homepage = "https://geomarker.io/hamilton_property_code_enforcement") |>
-  write_tdr_csv()
+  add_type_attrs()
+
+write_tdr_csv(d_tract)
+
+# write metadata.md
+cat("#### Metadata\n\n", file = "metadata.md", append = FALSE)
+CODECtools::glimpse_attr(d_tract) |>
+  knitr::kable() |>
+  cat(file = "metadata.md", sep = "\n", append = TRUE)
+cat("\n#### Schema\n\n", file = "metadata.md", append = TRUE)
+d_tract |>
+  CODECtools::glimpse_schema() |>
+  knitr::kable() |>
+  cat(file = "metadata.md", sep = "\n", append = TRUE)
+
