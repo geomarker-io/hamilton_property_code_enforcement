@@ -11,7 +11,7 @@ See [metadata.md](./metadata.md) for detailed metadata and schema information.
 Read this CSV file into R directly from the [release](https://github.com/geomarker-io/hamilton_property_code_enforcement/releases) with:
 
 ```
-readr::read_csv("https://github.com/geomarker-io/hamilton_landcover/releases/download/v0.1.0/hamilton_landcover.csv")
+readr::read_csv("https://github.com/geomarker-io/hamilton_property_code_enforcement/releases/download/0.1.0/hamilton_property_code_enforcement.csv")
 ```
 
 Metadata can be imported from the accompanying `tabular-data-resource.yaml` file by using [{CODECtools}](https://geomarker.io/CODECtools/).
