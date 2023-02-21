@@ -34,6 +34,7 @@ d <-
 d_tract <-
   d |>
   st_drop_geometry() |>
+  filter(! is.na(census_tract_id_2020)) |>
   nest_by(census_tract_id_2020) |>
   mutate(
     n_violations = nrow(data),
@@ -41,7 +42,7 @@ d_tract <-
     date_max = as.Date(max(data$ENTERED_DATE)),
     n_days = date_max - date_min
   ) |>
-  left_join(cincy::tract_tigris_2020, by = "census_tract_id_2020") |>
+  full_join(cincy::tract_tigris_2020, by = "census_tract_id_2020") |>
   select(-data) |>
   st_as_sf()
 
@@ -67,7 +68,7 @@ d_tract <-
                 description = "number of property code enforcements per household") |>
   add_attrs(name = "hamilton_property_code_enforcement",
             title = "Hamilton County Property Code Enforcement",
-            version = "0.1",
+            version = "0.1.1",
             homepage = "https://geomarker.io/hamilton_property_code_enforcement") |>
   add_type_attrs()
 
