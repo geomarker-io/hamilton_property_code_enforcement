@@ -46,6 +46,9 @@ d_tract <-
   select(-data) |>
   st_as_sf()
 
+# change NA to 0 for number of enforcements in tracts without any enforcements
+d_tract <- tidyr::replace_na(d_tract, list(n_violations = 0))
+
 # calculate as number of violations per household
 hh_per_tract <-
   tigris::blocks(39, 061, year = 2020) |>
@@ -68,7 +71,7 @@ d_tract <-
                 description = "number of property code enforcements per household") |>
   add_attrs(name = "hamilton_property_code_enforcement",
             title = "Hamilton County Property Code Enforcement",
-            version = "0.1.1",
+            version = "0.1.2",
             homepage = "https://geomarker.io/hamilton_property_code_enforcement") |>
   add_type_attrs()
 
