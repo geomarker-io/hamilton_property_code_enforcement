@@ -72,6 +72,7 @@ d_tract <-
   add_attrs(name = "hamilton_property_code_enforcement",
             title = "Hamilton County Property Code Enforcement",
             version = "0.1.2",
+            description = "Number of property code enforcements per household by census tract",
             homepage = "https://geomarker.io/hamilton_property_code_enforcement") |>
   add_type_attrs()
 
