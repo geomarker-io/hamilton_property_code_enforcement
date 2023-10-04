@@ -1,0 +1,102 @@
+---
+title: "Parcel Match Summary"
+format: html
+editor: visual
+execute: 
+  message: false
+  warning: false
+---
+
+# Match
+
+```{r}
+library(tidyverse)
+library(parcel)
+```
+
+
+```{r, eval = FALSE}
+code_enforcement_url <- "https://data.cincinnati-oh.gov/api/views/cncm-znd6/rows.csv?accessType=DOWNLOAD"
+
+raw_data <-
+  readr::read_csv(code_enforcement_url,
+                  col_types = readr::cols_only(
+                    SUB_TYPE_DESC = "character",
+                    NUMBER_KEY = "character",
+                    ENTERED_DATE = readr::col_datetime(format = "%m/%d/%Y %I:%M:%S %p"),
+                    FULL_ADDRESS = "character",
+                    LATITUDE = "numeric",
+                    LONGITUDE = "numeric",
+                    DATA_STATUS_DISPLAY = "character"
+                  )) 
+
+d <- 
+  raw_data |>
+  rename(address = FULL_ADDRESS) |>
+  filter(!DATA_STATUS_DISPLAY %in% c(
+    "Closed - No Violation",
+    "Closed - No Violations Found",
+    "Duplicate Case",
+    "Closed - Duplicate Complaint"
+  )) |>
+  mutate(SUB_TYPE_DESC = stringr::str_to_lower(SUB_TYPE_DESC))
+
+d_parcel <- parcel::add_parcel_id(d)
+saveRDS(d_parcel, "property_code_parcel.rds")
+```
+
+```{r}
+d_parcel <- readRDS("property_code_parcel.rds")
+```
+
+After filtering out non-violations, there are `r nrow(d_parcel)` violations recorded.
+
+```{r}
+d <- d_parcel |>
+  tidyr::unnest(cols = c(parcel_id))
+```
+
+After unnesting the `r nrow(d_parcel)` violations, there are `r nrow(d)` parcels. 
+
+```{r}
+d |>
+  group_by(missing_parcel = is.na(parcel_id)) |>
+  tally() |>
+  mutate(pct = round(n/sum(n)*100,1)) |>
+  knitr::kable()
+```
+Approximately 25% of the `r nrow(d)` rows are missing `parcel_id`. 
+
+```{r}
+d_missing <- d |>
+  filter(is.na(parcel_id))
+
+readr::write_csv(d_missing, "missing_parcel_id.csv")
+```
+
+```{r}
+d <- d |>
+  filter(!is.na(parcel_id), 
+         !is.na(address))
+```
+
+Of the `r nrow(d)` rows that are not missing `parcel_id` or `address`, there are `r length(unique(d$address))` unique addresses. 
+
+```{r}
+d_match <- d |>
+  select(NUMBER_KEY, address, parcel_id) |>
+  group_by(NUMBER_KEY, address) |>
+  nest() |>
+  mutate(n_matches = map_dbl(data, nrow)) |>
+  group_by(address) |>
+  slice(1)
+
+d_match |>
+  group_by(n_matches) |>
+  tally() |>
+  mutate(pct = round(n/sum(n)*100, 1)) |>
+  knitr::kable()
+```
+
+
+
