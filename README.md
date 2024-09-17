@@ -1,3 +1,5 @@
+**This repository is deprecated in favor of https://github.com/geomarker-io/parcel/property_code_enforcements**
+
 # Hamilton County Property Code Enforcement
 
 ## About
